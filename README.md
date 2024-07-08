@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # internapp
 
 A new Flutter project.
@@ -14,3 +15,7 @@ A few resources to get you started if this is your first Flutter project:
 For help getting started with Flutter development, view the
 [online documentation](https://docs.flutter.dev/), which offers tutorials,
 samples, guidance on mobile development, and a full API reference.
+=======
+# FullStackFlutterApp
+Trying to Learn flutter through this full stack flutter app
+>>>>>>> efb9c47d21f1dcb428cb45247d28b88f4ecdd674
