@@ -14,4 +14,10 @@ class Post {
     title: json['title'],
     description: json['body'],
   );
+
+  Map<String, dynamic> toJson() => {
+    'userId': userId,
+    'title': title,
+    'body': description,
+  };
 }

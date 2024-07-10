@@ -15,4 +15,19 @@ class PostService {
       throw Exception('Failed to load posts');
     }
   }
+  Future<Post> createPost(Post post) async {
+    final response = await http.post(
+      Uri.parse('https://jsonplaceholder.typicode.com/posts'),
+      headers: {
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+      body: jsonEncode(post.toJson()),
+    );
+
+    if (response.statusCode == 201) {
+      return Post.fromJson(jsonDecode(response.body));
+    } else {
+      throw Exception('Failed to create post');
+    }
+  }
 }
