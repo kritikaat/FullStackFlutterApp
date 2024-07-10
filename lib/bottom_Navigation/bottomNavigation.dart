@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:internapp/Model/Post.dart';
+import 'package:internapp/bottom_Navigation/Post_list_View.dart';
 import 'package:internapp/services/post_service.dart';
 
 class BottomNavigationBarExample extends StatefulWidget {
@@ -10,8 +11,7 @@ class BottomNavigationBarExample extends StatefulWidget {
       _BottomNavigationBarExampleState();
 }
 
-class _BottomNavigationBarExampleState
-    extends State<BottomNavigationBarExample> {
+class _BottomNavigationBarExampleState extends State<BottomNavigationBarExample> {
   int _selectedIndex = 0;
   late Future<List<Post>> futurePosts;
 
@@ -35,29 +35,7 @@ class _BottomNavigationBarExampleState
     return Scaffold(
       body: Center(
         child: _selectedIndex == 0
-            ? FutureBuilder<List<Post>>(
-                future: futurePosts,
-                builder: (context, snapshot) {
-                  if (snapshot.connectionState == ConnectionState.waiting) {
-                    return CircularProgressIndicator();
-                  } else if (snapshot.hasError) {
-                    return Text('Error: ${snapshot.error}');
-                  } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                    return Text('No posts found');
-                  } else {
-                    return ListView.builder(
-                      itemCount: snapshot.data!.length,
-                      itemBuilder: (context, index) {
-                        Post post = snapshot.data![index];
-                        return ListTile(
-                          title: Text(post.title),
-                          subtitle: Text(post.description),
-                        );
-                      },
-                    );
-                  }
-                },
-              )
+            ? PostListView(futurePosts: futurePosts) // Use the new widget
             : _widgetOptions.elementAt(_selectedIndex),
       ),
       bottomNavigationBar: BottomNavigationBar(
@@ -82,13 +60,8 @@ class _BottomNavigationBarExampleState
     );
   }
 
-  static const TextStyle optionStyle =
-      TextStyle(fontSize: 30, fontWeight: FontWeight.bold);
   static const List<Widget> _widgetOptions = <Widget>[
-    Text(
-      'Index 0: Home',
-      style: optionStyle,
-    ),
+    // Placeholder text for other tabs
     Text(
       'Index 1: Business',
       style: optionStyle,
@@ -98,4 +71,6 @@ class _BottomNavigationBarExampleState
       style: optionStyle,
     ),
   ];
+
+  static const TextStyle optionStyle = TextStyle(fontSize: 30, fontWeight: FontWeight.bold);
 }
