@@ -30,4 +30,34 @@ class PostService {
       throw Exception('Failed to create post');
     }
   }
+
+
+  Future<Post> updatePost(Post post) async {
+    final response = await http.put(
+      Uri.parse('$apiUrl/${post.id}'),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+      body: jsonEncode(post.toJson()),
+    );
+
+    if (response.statusCode == 200) {
+      return Post.fromJson(jsonDecode(response.body));
+    } else {
+      throw Exception('Failed to update post');
+    }
+  }
+
+   Future<void> deletePost(int id) async {
+    final response = await http.delete(
+      Uri.parse('$apiUrl/$id'),
+      headers: {
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+    );
+
+    if (response.statusCode != 200) {
+      throw Exception('Failed to delete post');
+    }
+  }
 }

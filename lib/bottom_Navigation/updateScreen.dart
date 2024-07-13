@@ -2,35 +2,42 @@ import 'package:flutter/material.dart';
 import 'package:internapp/Model/Post.dart';
 import 'package:internapp/services/post_service.dart';
 
-class CreatePostScreen extends StatefulWidget {
-  const CreatePostScreen({super.key});
+class UpdatePostScreen extends StatefulWidget {
+  final Post post;
+
+  const UpdatePostScreen({required this.post, Key? key}) : super(key: key);
 
   @override
-  _CreatePostScreenState createState() => _CreatePostScreenState();
+  _UpdatePostScreenState createState() => _UpdatePostScreenState();
 }
 
-class _CreatePostScreenState extends State<CreatePostScreen> {
+class _UpdatePostScreenState extends State<UpdatePostScreen> {
   final _formKey = GlobalKey<FormState>();
-  final TextEditingController _userIdController = TextEditingController();
-  final TextEditingController _titleController = TextEditingController();
-  final TextEditingController _descriptionController = TextEditingController();
+  late TextEditingController _titleController;
+  late TextEditingController _descriptionController;
+
+  @override
+  void initState() {
+    super.initState();
+    _titleController = TextEditingController(text: widget.post.title);
+    _descriptionController = TextEditingController(text: widget.post.description);
+  }
 
   Future<void> _submitForm() async {
     if (_formKey.currentState!.validate()) {
-      int userId = int.parse(_userIdController.text);
-      Post newPost = Post(
-        id: 0, // Assuming ID is auto-generated
-        userId: userId,
+      Post updatedPost = Post(
+        id: widget.post.id,
+        userId: widget.post.userId,
         title: _titleController.text,
         description: _descriptionController.text,
       );
 
       try {
-        Post createdPost = await PostService().createPost(newPost);
-        Navigator.pop(context, createdPost);
+        Post post = await PostService().updatePost(updatedPost);
+        Navigator.pop(context, post);
       } catch (e) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to create post: $e')),
+          SnackBar(content: Text('Failed to update post: $e')),
         );
       }
     }
@@ -40,7 +47,7 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Create Post'),
+        title: Text('Update Post'),
       ),
       body: Padding(
         padding: EdgeInsets.all(16.0),
@@ -48,18 +55,6 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
           key: _formKey,
           child: Column(
             children: <Widget>[
-              TextFormField(
-                controller: _userIdController,
-                decoration: InputDecoration(labelText: 'User ID'),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter a user ID';
-                  } else if (int.tryParse(value) == null) {
-                    return 'Please enter a valid number';
-                  }
-                  return null;
-                },
-              ),
               TextFormField(
                 controller: _titleController,
                 decoration: InputDecoration(labelText: 'Title'),
@@ -83,7 +78,7 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
               SizedBox(height: 20),
               ElevatedButton(
                 onPressed: _submitForm,
-                child: Text('Create Post'),
+                child: Text('Update Post'),
               ),
             ],
           ),

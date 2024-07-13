@@ -1,18 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:internapp/Model/Post.dart';
 import 'package:internapp/bottom_Navigation/createpostScreen.dart';
+import 'package:internapp/bottom_Navigation/updateScreen.dart';
 import 'package:internapp/services/post_service.dart';
 
 class BottomNavigationBarExample extends StatefulWidget {
   const BottomNavigationBarExample({super.key});
 
   @override
-  State<BottomNavigationBarExample> createState() =>
-      _BottomNavigationBarExampleState();
+  State<BottomNavigationBarExample> createState() => _BottomNavigationBarExampleState();
 }
 
-class _BottomNavigationBarExampleState
-    extends State<BottomNavigationBarExample> {
+class _BottomNavigationBarExampleState extends State<BottomNavigationBarExample> {
   int _selectedIndex = 0;
   late Future<List<Post>> futurePosts;
   List<Post> _posts = [];
@@ -54,6 +53,35 @@ class _BottomNavigationBarExampleState
     }
   }
 
+  Future<void> _navigateToUpdatePostScreen(Post post) async {
+    final updatedPost = await Navigator.push<Post>(
+      context,
+      MaterialPageRoute(builder: (context) => UpdatePostScreen(post: post)),
+    );
+
+    if (updatedPost != null) {
+      setState(() {
+        int index = _posts.indexWhere((p) => p.id == updatedPost.id);
+        if (index != -1) {
+          _posts[index] = updatedPost;
+        }
+      });
+    }
+  }
+
+  Future<void> _deletePost(int id) async {
+    try {
+      await PostService().deletePost(id);
+      setState(() {
+        _posts.removeWhere((post) => post.id == id);
+      });
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Failed to delete post: $e')),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -91,15 +119,15 @@ class _BottomNavigationBarExampleState
         items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(
             icon: Icon(Icons.home),
-            label: 'Reminder',
+            label: 'Home',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.business),
-            label: 'Chart',
+            label: 'Business',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.school),
-            label: 'Settings',
+            label: 'School',
           ),
         ],
         currentIndex: _selectedIndex,
@@ -117,13 +145,25 @@ class _BottomNavigationBarExampleState
         return ListTile(
           title: Text(post.title),
           subtitle: Text(post.description),
+          trailing: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              IconButton(
+                icon: Icon(Icons.edit),
+                onPressed: () => _navigateToUpdatePostScreen(post),
+              ),
+              IconButton(
+                icon: Icon(Icons.delete),
+                onPressed: () => _deletePost(post.id),
+              ),
+            ],
+          ),
         );
       },
     );
   }
 
-  static const TextStyle optionStyle =
-      TextStyle(fontSize: 30, fontWeight: FontWeight.bold);
+  static const TextStyle optionStyle = TextStyle(fontSize: 30, fontWeight: FontWeight.bold);
   static const List<Widget> _widgetOptions = <Widget>[
     Text(
       'Index 0: Home',
